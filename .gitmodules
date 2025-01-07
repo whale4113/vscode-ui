@@ -1,0 +1,3 @@
+[submodule "packages/core/vscode"]
+	path = packages/core/vscode
+	url = https://github.com/microsoft/vscode.git
