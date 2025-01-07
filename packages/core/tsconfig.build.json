@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ES2020",
+    "moduleResolution": "bundler",
+    "lib": ["DOM", "ES2022", "DOM.Iterable"],
+    "experimentalDecorators": true,
+    "strict": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "declarationDir": ".declaration-temp"
+  },
+  "include": [
+    "src",
+    "./vscode/src/typings/editContext.d.ts",
+    "./vscode/src/typings/thenable.d.ts",
+    "./vscode/src/typings/vscode-globals-nls.d.ts",
+    "./vscode/src/typings/vscode-globals-product.d.ts"
+  ],
+  "exclude": ["node_modules"]
+}

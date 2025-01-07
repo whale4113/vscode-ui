@@ -1,0 +1,1 @@
+export * from '../vscode/src/vs/base/browser/ui/splitview/splitview'
