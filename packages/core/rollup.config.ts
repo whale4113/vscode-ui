@@ -1,79 +1,35 @@
-import { defineConfig, Plugin } from "rollup";
-import typescript from "@rollup/plugin-typescript";
-import path from "node:path";
+import { defineConfig } from "rollup";
+import escape from "regexp.escape";
+import resolve from "@rollup/plugin-node-resolve";
+import { swc } from "rollup-plugin-swc3";
+import { css } from "./rollup-plugins";
 
-interface RollupCssOptions {}
+import { peerDependencies } from "./package.json";
 
-function css(options: RollupCssOptions = {}): Plugin {
-  const {} = options;
-
-  let emittedCSS = new Map<
-    string,
-    {
-      merber: string;
-      code: string;
-    }
-  >();
-
-  return {
-    name: "css",
-
-    async resolveId(source, importer, options) {
-      if (!source.endsWith(".css")) return null;
-
-      const resolveId = await this.resolve(source, importer, options);
-
-      if (resolveId && importer && !emittedCSS.has(resolveId.id)) {
-        emittedCSS.set(resolveId.id, {
-          merber: path.parse(source).name,
-          code: "",
-        });
-      }
-
-      return resolveId;
-    },
-    async transform(code, id) {
-      if (!id.endsWith(".css")) return null;
-
-      if (emittedCSS.has(id)) {
-        const css = emittedCSS.get(id)!;
-        css.code = code;
-      }
-
-      return {
-        code: "export default {}",
-      };
-    },
-
-    async generateBundle() {
-      for (const [, css] of emittedCSS) {
-        this.emitFile({
-          type: "asset",
-          fileName: `${css.merber}/index.css`,
-          source: css.code,
-        });
-      }
-      emittedCSS.clear();
-    },
-  };
-}
+const packageNames = Object.keys(peerDependencies).map(escape);
+const externalRegex =
+  packageNames.length > 0
+    ? new RegExp(`(${packageNames.join("|")})`)
+    : undefined;
 
 export default defineConfig([
   {
-    input: "src/index.ts",
+    input: {
+      index: "src/index.ts",
+      common: "src/common/index.ts",
+    },
     output: {
       dir: "dist",
       format: "esm",
+      assetFileNames: "styles/[name]/index.css",
     },
     plugins: [
-      typescript({
+      resolve(),
+      swc({
         tsconfig: "tsconfig.build.json",
-        compilerOptions: {
-          declaration: false,
-          declarationDir: undefined,
-        },
       }),
       css(),
     ],
+    external: externalRegex,
   },
 ]);
