@@ -6,10 +6,10 @@ import { css } from "./rollup-plugins";
 
 import { peerDependencies } from "./package.json";
 
-const packageNames = Object.keys(peerDependencies).map(escape);
+const packageNames = Object.keys(peerDependencies);
 const externalRegex =
   packageNames.length > 0
-    ? new RegExp(`(${packageNames.join("|")})`)
+    ? new RegExp(`(${packageNames.map(escape).join("|")})`)
     : undefined;
 
 export default defineConfig([
